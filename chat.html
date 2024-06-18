@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Chat</title>
+  <style>
+    #messages { max-height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+    #message-input { width: 80%; }
+    button { width: 18%; }
+  </style>
+</head>
+<body>
+  <div id="chat">
+    <div id="messages"></div>
+    <input id="message-input" type="text" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+
+  <!-- Firebase 설정 -->
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+  <script>
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEhy6A8iIcQxgrN5ifOnBA2Hm8-fDHyiQ",
+      authDomain: "chat-7a125.firebaseapp.com",
+      databaseURL: "https://chat-7a125-default-rtdb.firebaseio.com",
+      projectId: "chat-7a125",
+      storageBucket: "chat-7a125.appspot.com",
+      messagingSenderId: "177695662985",
+      appId: "1:177695662985:web:1b80bf675eed0e72b2f758",
+      measurementId: "G-G31EBNLR9Q"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = firebase.database();
+
+    const messagesDiv = document.getElementById('messages');
+    const messageInput = document.getElementById('message-input');
+
+    function sendMessage() {
+      const message = messageInput.value;
+      if (message) {
+        db.ref('messages').push({
+          text: message,
+          timestamp: new Date().toISOString()
+        });
+        messageInput.value = '';
+      }
+    }
+
+    db.ref('messages').on('child_added', (snapshot) => {
+      const message = snapshot.val();
+      const messageDiv = document.createElement('div');
+      messageDiv.textContent = `${new Date(message.timestamp).toLocaleTimeString()}: ${message.text}`;
+      messagesDiv.appendChild(messageDiv);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+  </script>
+</body>
+</html>
