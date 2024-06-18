@@ -19,11 +19,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
   <script>
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "firebase/app";
-    import { getAnalytics } from "firebase/analytics";
-
-    // Your web app's Firebase configuration
+    // Firebase 구성
     const firebaseConfig = {
       apiKey: "AIzaSyAEhy6A8iIcQxgrN5ifOnBA2Hm8-fDHyiQ",
       authDomain: "chat-7a125.firebaseapp.com",
@@ -35,9 +31,8 @@
       measurementId: "G-G31EBNLR9Q"
     };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
+    // Firebase 초기화
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
     const messagesDiv = document.getElementById('messages');
@@ -49,8 +44,11 @@
         db.ref('messages').push({
           text: message,
           timestamp: new Date().toISOString()
+        }).then(() => {
+          messageInput.value = ''; // 메시지 입력창을 비웁니다.
+        }).catch((error) => {
+          console.error("Error sending message: ", error); // 에러가 발생하면 콘솔에 출력합니다.
         });
-        messageInput.value = '';
       }
     }
 
@@ -59,7 +57,7 @@
       const messageDiv = document.createElement('div');
       messageDiv.textContent = `${new Date(message.timestamp).toLocaleTimeString()}: ${message.text}`;
       messagesDiv.appendChild(messageDiv);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      messagesDiv.scrollTop = messagesDiv.scrollHeight; // 스크롤을 맨 아래로 이동합니다.
     });
   </script>
 </body>
